@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multiplayer Game with Rooms</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="joinMenu">
+    <h1>Create or Join a Room</h1>
+
+    <div>
+        <h2>Create Room</h2>
+        <input id="createRoomCode" placeholder="Room Code" />
+        <input id="createPassword" placeholder="Password" />
+        <button id="createRoomBtn">Create Room</button>
+    </div>
+
+    <div>
+            <h2>Join Room</h2>
+            <input id="joinRoomCode" placeholder="Room Code" />
+            <input id="joinPassword" placeholder="Password" />
+            <button id="joinRoomBtn">Join Room</button>
+        </div>
+
+    <h3 id="status"></h3>
+    </div>
+
+    <div id="gameMenu">
+
+    </div>
+
+    <script>
+        const socket = io();
+
+        // Creating a room
+        document.getElementById('createRoomBtn').onclick = () => {
+            const roomCode = document.getElementById('createRoomCode').value;
+            const password = document.getElementById('createPassword').value;
+
+            socket.emit('createRoom', { roomCode, password });
+        };
+
+        // Joining a room
+        document.getElementById('joinRoomBtn').onclick = () => {
+            const roomCode = document.getElementById('joinRoomCode').value;
+            const password = document.getElementById('joinPassword').value;
+
+            socket.emit('joinRoom', { roomCode, password });
+        };
+
+        // Receive events from the server
+        socket.on('roomCreated', (roomCode) => {
+            document.getElementById('status').textContent = `Room ${roomCode} created successfully!`;
+        });
+
+        socket.on('playerJoined', (players) => {
+            document.getElementById('status').textContent = `Another player joined. Current players: ${players.length}`;
+        });
+
+        socket.on('startGame', () => {
+            document.getElementById('joinMenu').style.visibility = false;
+            document.getElementById('gameMenu').style.visibility = true;
+        });
+
+        socket.on('error', (message) => {
+            document.getElementById('status').textContent = `Error: ${message}`;
+        });
+
+        socket.on('playerLeft', (players) => {
+            document.getElementById('status').textContent = `A player left. Remaining players: ${players.length}`;
+        });
+    </script>
+</body>
+</html>
