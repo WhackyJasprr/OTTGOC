@@ -5,7 +5,7 @@
   <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <div id="joinMenu">
+    <div id="joinMenu" style="visibility: visible;">
     <h1>Create or Join a Room</h1>
 
     <div>
@@ -25,8 +25,8 @@
     <h3 id="status"></h3>
     </div>
 
-    <div id="gameMenu">
-
+    <div id="gameMenu" style="visibility: hidden;">
+        <p id="gameHand">hello</p>
     </div>
 
     <script>
@@ -58,8 +58,8 @@
         });
 
         socket.on('startGame', () => {
-            document.getElementById('joinMenu').style.visibility = false;
-            document.getElementById('gameMenu').style.visibility = true;
+            document.getElementById('joinMenu').style.visibility = 'hidden'
+            document.getElementById('gameMenu').style.visibility = 'visible';
         });
 
         socket.on('error', (message) => {
@@ -69,6 +69,10 @@
         socket.on('playerLeft', (players) => {
             document.getElementById('status').textContent = `A player left. Remaining players: ${players.length}`;
         });
+
+        socket.on('getHand',(hand) => {
+            document.getElementById('gameHand').innerText = hand.join('')    
+        })
     </script>
 </body>
 </html>
