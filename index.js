@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
 
         // If there are 2 players, start the game or handle game logic
         if (room.players.length === 2) {
-          cards[roomCode] = genDeck();
+          //cards[roomCode] = genDeck();
           io.to(roomCode).emit('startGame');
         }
       } else {
@@ -109,19 +109,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-function genDeck(){
-  // Array to hold shuffled deck
-  let shuffledDeck = [];
-
-  while (deck.length > 0) {
-    // Pick a random index from the remaining deck
-    let randomIndex = Math.floor(Math.random() * deck.length);
-    
-    // Push the randomly picked card to the shuffled deck
-    shuffledDeck.push(deck[randomIndex]);
-    
-    // Remove the card from the original deck
-    deck.splice(randomIndex, 1);
-  }
-}
