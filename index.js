@@ -20,7 +20,9 @@ const deck = [
   ['club', '8'], ['club', '9'], ['club', '10'], ['club', 'J'], ['club', 'Q'], ['club', 'K'],
   
   ['spade', 'A'], ['spade', '2'], ['spade', '3'], ['spade', '4'], ['spade', '5'], ['spade', '6'], ['spade', '7'], 
-  ['spade', '8'], ['spade', '9'], ['spade', '10'], ['spade', 'J'], ['spade', 'Q'], ['spade', 'K']
+  ['spade', '8'], ['spade', '9'], ['spade', '10'], ['spade', 'J'], ['spade', 'Q'], ['spade', 'K'],
+
+  ['joker','red']
 ];
 
 // Store rooms data (passwords and players)
