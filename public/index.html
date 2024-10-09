@@ -31,6 +31,7 @@
 
     <script>
         const socket = io();
+        let Hand = []
 
         // Creating a room
         document.getElementById('createRoomBtn').onclick = () => {
@@ -71,6 +72,10 @@
         });
 
         socket.on('getHand',(hand) => {
+            hand.forEach((item) => {
+                //item = ['heart','7']
+                Hand.push(`${item[1]} of ${item[0]}`)
+            });
             document.getElementById('gameHand').innerText = hand.join('')    
         })
     </script>
