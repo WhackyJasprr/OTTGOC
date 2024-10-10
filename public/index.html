@@ -14,6 +14,11 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
+        .card{
+            font-family: 'Courier New', Courier, monospace;
+        }
+
     </style>
 </head>
 <body>
@@ -40,7 +45,7 @@
             <h3 id="status"></h3>
         </div>
 
-        <div id="gameMenu" style="display: none;">
+        <div id="gameMenu" style="display: none;" class="card">
             <p id="gameHand">hopefully you aren't seeing this</p>
             <div id="opHand"></div>
             <div id="board">
@@ -50,7 +55,7 @@
             </div>
             <div id="myHand"></div>
         </div>
-        <p id="log"></p>
+        <p id="log" class="card"></p>
     </main>
 
     <script>
@@ -151,7 +156,7 @@
         const socket = io();
         let formatedHand = [];
         let Hand = [];
-        document.getElementById('log').innerText = getCard('')
+        document.getElementById('log').innerText = getCard('A of spades')
 
         // Function to get the card representation
         function getCard(cardName) {
@@ -159,13 +164,13 @@
             const originRow = position[0];
             const originCol = position[1];
             const cardHeight = 6;
-            const cardWidth = 9;
+            const cardWidth = 7;
 
             let out = [];
             for (let x = originRow; x < originRow + cardHeight; x++) {
                 out.push(cards[x].join('').slice(originCol, originCol + cardWidth));
             }
-            return out.join('\n').replace(/Ä/g, '\\').replace(/Ö/g, '\'');
+            return out.join('\n').replace(/Ä/g, '\\').replace(/Ö/g, '\'').replace(/ /g,'  ');
         }
 
         // Create a room
