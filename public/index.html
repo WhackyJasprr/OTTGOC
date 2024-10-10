@@ -1,39 +1,237 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Multiplayer Game with Rooms</title>
-  <script src="socket.io/socket.io.js"></script>
+    <meta charset="UTF-8">
+    <title>Multiplayer Game with Rooms</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #joinMenu, #gameMenu {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div id="joinMenu" style="display: block;">
-    <h1>Create or Join a Room</h1>
+    <header>
+        <h1>Create or Join a Room</h1>
+    </header>
+    
+    <main>
+        <div id="joinMenu" style="display:block;">
+            <div>
+                <h2>Create Room</h2>
+                <input id="createRoomCode" placeholder="Room Code" value="1"/>
+                <input id="createPassword" placeholder="Password" value="2"/>
+                <button id="createRoomBtn">Create Room</button>
+            </div>
 
-    <div>
-        <h2>Create Room</h2>
-        <input id="createRoomCode" placeholder="Room Code" />
-        <input id="createPassword" placeholder="Password" />
-        <button id="createRoomBtn">Create Room</button>
-    </div>
+            <div>
+                <h2>Join Room</h2>
+                <input id="joinRoomCode" placeholder="Room Code" value="1"/>
+                <input id="joinPassword" placeholder="Password" value="2"/>
+                <button id="joinRoomBtn">Join Room</button>
+            </div>
 
-    <div>
-            <h2>Join Room</h2>
-            <input id="joinRoomCode" placeholder="Room Code" />
-            <input id="joinPassword" placeholder="Password" />
-            <button id="joinRoomBtn">Join Room</button>
+            <h3 id="status"></h3>
         </div>
 
-    <h3 id="status"></h3>
-    </div>
-
-    <div id="gameMenu" style="display: none;">
-        <p id="gameHand">hello</p>
-        <div id="opHand"></div>
-        <div id="board">
-            <div id="row1"></div>
-            <div id="row2"></div>
-            <div id="row3"></div>
+        <div id="gameMenu" style="display: none;">
+            <p id="gameHand">hopefully you aren't seeing this</p>
+            <div id="opHand"></div>
+            <div id="board">
+                <div id="row1"></div>
+                <div id="row2"></div>
+                <div id="row3"></div>
+            </div>
+            <div id="myHand"></div>
         </div>
-        <div id="myHand"></div>
-    </div>
+        <p id="log"></p>
+    </main>
+
+    <script>
+        const cards = [
+            [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '], 
+            ['|A .  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ^ | |J  ww| |Q  ww| |K  WW|'],
+            ['| /.Ä | |  ^  | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | |^ ^ ^| |^ ^ ^| |^ ^ ^| | ^ {)| | ^ {(| | ^ {)|'],
+            ['|(_._)| |     | |     | |     | |  ^  | | ^ ^ | |^ ^ ^| | ^ ^ | |^ ^ ^| |^ ^ ^| |(.)% | |(.)%%| |(.)%%|'],
+            ['|  |  | |  ^  | |  ^  | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | |^ ^ ^| |^ ^ ^| |^ ^ ^| | | % | | |%%%| | |%%%|'],
+            ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
+            [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
+            ['|A _  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 & | |J  ww| |Q  ww| |K  WW|'],
+            ['| ( ) | |  &  | | & & | | & & | | & & | | & & | | & & | |& & &| |& & &| |& & &| | o {)| | o {(| | o {)|'],
+            ['|(_Ö_)| |     | |     | |     | |  &  | | & & | |& & &| | & & | |& & &| |& & &| |o o% | |o o%%| |o o%%|'],
+            ['|  |  | |  &  | |  &  | | & & | | & & | | & & | | & & | |& & &| |& & &| |& & &| | | % | | |%%%| | |%%%|'],
+            ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
+            [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
+            ['|A_ _ | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 v | |J  ww| |Q  ww| |K  WW|'],
+            ['|( v )| |  v  | | v v | | v v | | v v | | v v | | v v | |v v v| |v v v| |v v v| |   {)| |   {(| |   {)|'],
+            ['| Ä / | |     | |     | |     | |  v  | | v v | |v v v| | v v | |v v v| |v v v| |(v)% | |(v)%%| |(v)%%|'],
+            ['|  .  | |  v  | |  v  | | v v | | v v | | v v | | v v | |v v v| |v v v| |v v v| | v % | | v%%%| | v%%%|'],
+            ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
+            [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
+            ['|A ^  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 o | |J  ww| |Q  ww| |K  WW|'],
+            ['| / Ä | |  o  | | o o | | o o | | o o | | o o | | o o | |o o o| |o o o| |o o o| | /Ä{)| | /Ä{(| | /Ä{)|'],
+            ['| Ä / | |     | |     | |     | |  o  | | o o | |o o o| | o o | |o o o| |o o o| | Ä/% | | Ä/%%| | Ä/%%|'],
+            ['|  .  | |  o  | |  o  | | o o | | o o | | o o | | o o | |o o o| |o o o| |o o o| |   % | |  %%%| |  %%%|'],
+            ['|____o| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
+            [' _____   _____ '],
+            ['|Ä ~ /| |Joker|'],
+            ['|}}:{{| |==%, |'],
+            ['|}}:{{| | Ä/>Ä|'],
+            ['|}}:{{| | _>^^|'],
+            ['|/_~_Ä| |/_Ä/_|'],
+        ]
+ 
+        const pos = {
+            'A of spades': [0, 0], 
+            '2 of spades': [0, 8], 
+            '3 of spades': [0, 16], 
+            '4 of spades': [0, 24], 
+            '5 of spades': [0, 32], 
+            '6 of spades': [0, 40], 
+            '7 of spades': [0, 48], 
+            '8 of spades': [0, 56], 
+            '9 of spades': [0, 64], 
+            '10 of spades': [0, 72], 
+            'J of spades': [0, 80], 
+            'Q of spades': [0, 88], 
+            'K of spades': [0, 96],
+
+            'A of clubs': [6, 0], 
+            '2 of clubs': [6, 8], 
+            '3 of clubs': [6, 16], 
+            '4 of clubs': [6, 24], 
+            '5 of clubs': [6, 32], 
+            '6 of clubs': [6, 40], 
+            '7 of clubs': [6, 48], 
+            '8 of clubs': [6, 56], 
+            '9 of clubs': [6, 64], 
+            '10 of clubs': [6, 72], 
+            'J of clubs': [6, 80], 
+            'Q of clubs': [6, 88], 
+            'K of clubs': [6, 96],
+
+            'A of hearts': [12, 0], 
+            '2 of hearts': [12, 8], 
+            '3 of hearts': [12, 16], 
+            '4 of hearts': [12, 24], 
+            '5 of hearts': [12, 32], 
+            '6 of hearts': [12, 40], 
+            '7 of hearts': [12, 48], 
+            '8 of hearts': [12, 56], 
+            '9 of hearts': [12, 64], 
+            '10 of hearts': [12, 72], 
+            'J of hearts': [12, 80], 
+            'Q of hearts': [12, 88], 
+            'K of hearts': [12, 96],
+
+            'A of diamonds': [18, 0], 
+            '2 of diamonds': [18, 8], 
+            '3 of diamonds': [18, 16], 
+            '4 of diamonds': [18, 24], 
+            '5 of diamonds': [18, 32], 
+            '6 of diamonds': [18, 40], 
+            '7 of diamonds': [18, 48], 
+            '8 of diamonds': [18, 56], 
+            '9 of diamonds': [18, 64], 
+            '10 of diamonds': [18, 72], 
+            'J of diamonds': [18, 80], 
+            'Q of diamonds': [18, 88], 
+            'K of diamonds': [18, 96],
+            
+            'joker of red': [24, 8],
+            'back': [24, 0]
+        };
+
+        const socket = io();
+        let formatedHand = [];
+        let Hand = [];
+        document.getElementById('log').innerText = getCard('')
+
+        // Function to get the card representation
+        function getCard(cardName) {
+            const position = pos[cardName];
+            const originRow = position[0];
+            const originCol = position[1];
+            const cardHeight = 6;
+            const cardWidth = 9;
+
+            let out = [];
+            for (let x = originRow; x < originRow + cardHeight; x++) {
+                out.push(cards[x].join('').slice(originCol, originCol + cardWidth));
+            }
+            return out.join('\n').replace(/Ä/g, '\\').replace(/Ö/g, '\'');
+        }
+
+        // Create a room
+        document.getElementById('createRoomBtn').onclick = () => {
+            const roomCode = document.getElementById('createRoomCode').value;
+            const password = document.getElementById('createPassword').value;
+
+            if (roomCode && password) {
+                socket.emit('createRoom', { roomCode, password });
+            } else {
+                showError("Room code and password cannot be empty.");
+            }
+        };
+
+        // Join a room
+        document.getElementById('joinRoomBtn').onclick = () => {
+            const roomCode = document.getElementById('joinRoomCode').value;
+            const password = document.getElementById('joinPassword').value;
+
+            if (roomCode && password) {
+                socket.emit('joinRoom', { roomCode, password });
+            } else {
+                showError("Room code and password cannot be empty.");
+            }
+        };
+
+        // Display error messages
+        function showError(message) {
+            document.getElementById('status').textContent = `Error: ${message}`;
+        }
+
+        // Socket event handlers
+        socket.on('roomCreated', (roomCode) => {
+            document.getElementById('status').textContent = `Room ${roomCode} created successfully!`;
+        });
+
+        socket.on('playerJoined', (players) => {
+            document.getElementById('status').textContent = `Another player joined. Current players: ${players.length}`;
+        });
+
+        socket.on('startGame', () => {
+            document.getElementById('joinMenu').style.display = 'none';
+            document.getElementById('gameMenu').style.display = 'block';    
+            document.getElementById('opHand').innerText = getCard('back');
+        });
+
+        socket.on('error', (message) => {
+            showError(message);
+        });
+
+        socket.on('playerLeft', (players) => {
+            document.getElementById('status').textContent = `A player left. Remaining players: ${players.length}`;
+        });
+
+        socket.on('getHand',(hand) => {
+            log('1')
+            Hand = hand;
+            log('2')
+            formatedHand = hand.map(item => `${item[1]} of ${item[0]}`);
+            log('3')
+            let cardStr = getCard(formatedHand[0]).toString();
+            log('4')
+            document.getElementById('gameHand').innerText = formatedHand.join(' ');
+            log('5')
+            document.getElementById('myHand').innerText = cardStr;
+        });
+    </script>
 </body>
 </html>

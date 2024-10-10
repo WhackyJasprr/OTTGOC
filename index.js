@@ -36,7 +36,6 @@ app.use(express.static('public')); // Your static files like index.html go here
 // Handle client connections
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-
   // When a player creates a room
   socket.on('createRoom', ({ roomCode, password }) => {
     if (!rooms[roomCode]) {
@@ -49,6 +48,10 @@ io.on('connection', (socket) => {
     } else {
       socket.emit('error', 'Room already exists');
     }
+  });
+
+  socket.on('log', (data) => {
+    console.log(data);
   });
 
   // When a player tries to join a room
@@ -72,18 +75,23 @@ io.on('connection', (socket) => {
           io.to(roomCode).emit('startGame');  // Broadcast to all players in the room
         
           // Generate the deck for the room
+          
           cards[roomCode] = genDeck();
         
           // Loop over each player in the room and send them their hand
+          
           room.players.forEach(playerSocketId => {
-            console.log(playerSocketId);  // This should log each player's socket ID
-        
+            //console.log(playerSocketId);  // This should log each player's socket ID
+          
             // Draw a hand of 3 cards for the player
             let hand = drawTo3(cards[roomCode], []);
-            console.log(hand);
-        
+            //console.log(hand);
+            
             // Send the hand directly to the player
-            io.to(playerSocketId).emit('getHand', hand);
+            //console.log(`data is being sent to ${playerSocketId} : ${hand}`)
+            io.sockets.connected[player].emit("getHand", "hand");
+            //co(playerSocketId).emit('getHand', hand);
+            
           });
         }
         
