@@ -10,17 +10,17 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = socketIo(server);
 const deck = [
-  ['heart', 'A'], ['heart', '2'], ['heart', '3'], ['heart', '4'], ['heart', '5'], ['heart', '6'], ['heart', '7'], 
-  ['heart', '8'], ['heart', '9'], ['heart', '10'], ['heart', 'J'], ['heart', 'Q'], ['heart', 'K'],
+  ['hearts', 'A'], ['hearts', '2'], ['hearts', '3'], ['hearts', '4'], ['hearts', '5'], ['hearts', '6'], ['hearts', '7'], 
+  ['hearts', '8'], ['hearts', '9'], ['hearts', '10'], ['hearts', 'J'], ['hearts', 'Q'], ['hearts', 'K'],
   
-  ['diamond', 'A'], ['diamond', '2'], ['diamond', '3'], ['diamond', '4'], ['diamond', '5'], ['diamond', '6'], 
-  ['diamond', '7'], ['diamond', '8'], ['diamond', '9'], ['diamond', '10'], ['diamond', 'J'], ['diamond', 'Q'], ['diamond', 'K'],
+  ['diamonds', 'A'], ['diamonds', '2'], ['diamonds', '3'], ['diamonds', '4'], ['diamonds', '5'], ['diamonds', '6'], 
+  ['diamonds', '7'], ['diamonds', '8'], ['diamonds', '9'], ['diamonds', '10'], ['diamonds', 'J'], ['diamonds', 'Q'], ['diamonds', 'K'],
   
-  ['club', 'A'], ['club', '2'], ['club', '3'], ['club', '4'], ['club', '5'], ['club', '6'], ['club', '7'], 
-  ['club', '8'], ['club', '9'], ['club', '10'], ['club', 'J'], ['club', 'Q'], ['club', 'K'],
+  ['clubs', 'A'], ['clubs', '2'], ['clubs', '3'], ['clubs', '4'], ['clubs', '5'], ['clubs', '6'], ['clubs', '7'], 
+  ['clubs', '8'], ['clubs', '9'], ['clubs', '10'], ['clubs', 'J'], ['clubs', 'Q'], ['clubs', 'K'],
   
-  ['spade', 'A'], ['spade', '2'], ['spade', '3'], ['spade', '4'], ['spade', '5'], ['spade', '6'], ['spade', '7'], 
-  ['spade', '8'], ['spade', '9'], ['spade', '10'], ['spade', 'J'], ['spade', 'Q'], ['spade', 'K'],
+  ['spades', 'A'], ['spades', '2'], ['spades', '3'], ['spades', '4'], ['spades', '5'], ['spades', '6'], ['spades', '7'], 
+  ['spades', '8'], ['spades', '9'], ['spades', '10'], ['spades', 'J'], ['spades', 'Q'], ['spades', 'K'],
 
   ['joker','red']
 ];
@@ -82,16 +82,14 @@ io.on('connection', (socket) => {
           
           room.players.forEach(playerSocketId => {
             //console.log(playerSocketId);  // This should log each player's socket ID
-          
             // Draw a hand of 3 cards for the player
             let hand = drawTo3(cards[roomCode], []);
             //console.log(hand);
             
             // Send the hand directly to the player
             //console.log(`data is being sent to ${playerSocketId} : ${hand}`)
-            io.sockets.connected[player].emit("getHand", "hand");
-            //co(playerSocketId).emit('getHand', hand);
             
+            socket.to(playerSocketId).emit('getHand', [hand,playerSocketId]);
           });
         }
         
