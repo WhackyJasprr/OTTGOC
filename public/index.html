@@ -10,8 +10,6 @@
             font-family: Arial, sans-serif;
         }
 
-
-
         #joinMenu, #gameMenu {
             margin: auto;
             width: 50%;
@@ -96,11 +94,11 @@
 </head>
     <body class="background">
         <header>
-            <h1 id="gameMenu" class="menu-color">Create or Join a Room</h1>
+            <h1 class="joinState" class="menu-color">Create or Join a Room</h1>
         </header>
         
         <main>
-            <div id="joinMenu" style="display:block;" class="menu-color">
+            <div id="joinMenu" style="display:block;" class="menu-color joinState">
                 <div class="menu">
                     <h2>Create Room</h2>
                     <input id="createRoomCode" placeholder="Room Code" value="1" class="inp"/>
@@ -118,45 +116,43 @@
                 <h3 id="status"></h3>
             </div>
 
-            <div id="gameMenu" style="display:none;" class="card">
-                <p id="gameHand">hopefully you aren't seeing this</p>
-                <p>but you should be seening this</p>
-                <div id="opHand"></div>
-                <div id="board">
-                    <div id="row1"></div>
-                    <div id="row2"></div>
-                    <div id="row3"></div>
+            <div id="gameMenu" style="display:none;" class="card gameState"> <!-- will show when gmae star hold gamestuff -->
+                <div id="opHand"></div> <!-- holds oppents hand class - card gameState  -->
+                <div id="board"> <!-- holds the board class - card gameState -->
+                    <div id="row1"></div> <!-- row 1  class - card gameState-->
+                    <div id="row2"></div> <!-- row 2  class - card gameState -->
+                    <div id="row3"></div> <!-- row 3  class - card gameState -->
                 </div>
-                <div id="myHand"></div>
+                <div id="myHand"></div> <!-- holds my hand class - card gameState -->
             </div>
-            <p id="log" class="card inp"></p>
+            <p id="log" class="card inp" style="visibility: hidden;"></p>
         </main>
         
         <script>
             const cards = [
                 [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '], 
-                ['|A .  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ♠ | |J  ww| |Q  ww| |K  WW|'],
-                ['| /.Ä | |  ♠  | | ♠ ♠ | | ♠ ♠ | | ♠ ♠ | | ♠ ♠ | | ♠ ♠ | |♠ ♠ ♠| |♠ ♠ ♠| |♠ ♠ ♠| | ♠ {)| | ♠ {(| | ♠ {)|'],
-                ['|(_._)| |     | |     | |     | |  ♠  | | ♠ ♠ | |♠ ♠ ♠| | ♠ ♠ | |♠ ♠ ♠| |♠ ♠ ♠| |(.)% | |(.)%%| |(.)%%|'],
-                ['|  |  | |  ♠  | |  ♠  | | ♠ ♠ | | ♠ ♠ | | ♠ ♠ | | ♠ ♠ | |♠ ♠ ♠| |♠ ♠ ♠| |♠ ♠ ♠| | | % | | |%%%| | |%%%|'],
+                ['|A .  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ^ | |J  ww| |Q  ww| |K  WW|'],
+                ['| /.Ä | |  ^  | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | |^ ^ ^| |^ ^ ^| |^ ^ ^| | ^ {)| | ^ {(| | ^ {)|'],
+                ['|(_._)| |     | |     | |     | |  ^  | | ^ ^ | |^ ^ ^| | ^ ^ | |^ ^ ^| |^ ^ ^| |(.)% | |(.)%%| |(.)%%|'],
+                ['|  |  | |  ^  | |  ^  | | ^ ^ | | ^ ^ | | ^ ^ | | ^ ^ | |^ ^ ^| |^ ^ ^| |^ ^ ^| | | % | | |%%%| | |%%%|'],
                 ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
                 [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
-                ['|A _  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ♣ | |J  ww| |Q  ww| |K  WW|'],
-                ['| ( ) | |  ♣  | | ♣ ♣ | | ♣ ♣ | | ♣ ♣ | | ♣ ♣ | | ♣ ♣ | |♣ ♣ ♣| |♣ ♣ ♣| |♣ ♣ ♣| | o {)| | o {(| | o {)|'],
-                ['|(_Ö_)| |     | |     | |     | |  ♣  | | ♣ ♣ | |♣ ♣ ♣| | ♣ ♣ | |♣ ♣ ♣| |♣ ♣ ♣| |o o% | |o o%%| |o o%%|'],
-                ['|  |  | |  ♣  | |  ♣  | | ♣ ♣ | | ♣ ♣ | | ♣ ♣ | | ♣ ♣ | |♣ ♣ ♣| |♣ ♣ ♣| |♣ ♣ ♣| | | % | | |%%%| | |%%%|'],
+                ['|A _  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 & | |J  ww| |Q  ww| |K  WW|'],
+                ['| ( ) | |  &  | | & & | | & & | | & & | | & & | | & & | |& & &| |& & &| |& & &| | o {)| | o {(| | o {)|'],
+                ['|(_Ö_)| |     | |     | |     | |  &  | | & & | |& & &| | & & | |& & &| |& & &| |o o% | |o o%%| |o o%%|'],
+                ['|  |  | |  &  | |  &  | | & & | | & & | | & & | | & & | |& & &| |& & &| |& & &| | | % | | |%%%| | |%%%|'],
                 ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
                 [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
-                ['|A_ _ | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ♦ | |J  ww| |Q  ww| |K  WW|'],
-                ['|( v )| |  ♦  | | ♦ ♦ | | ♦ ♦ | | ♦ ♦ | | ♦ ♦ | | ♦ ♦ | |♦ ♦ ♦| |♦ ♦ ♦| |♦ ♦ ♦| |   {)| |   {(| |   {)|'],
-                ['| Ä / | |     | |     | |     | |  ♦  | | ♦ ♦ | |♦ ♦ ♦| | ♦ ♦ | |♦ ♦ ♦| |♦ ♦ ♦| |(V)% | |(V)%%| |(V)%%|'],
-                ['|  .  | |  ♦  | |  ♦  | | ♦ ♦ | | ♦ ♦ | | ♦ ♦ | | ♦ ♦ | |♦ ♦ ♦| |♦ ♦ ♦| |♦ ♦ ♦| | V % | | v%%%| | v%%%|'],
+                ['|A_ _ | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 v | |J  ww| |Q  ww| |K  WW|'],
+                ['|( v )| |  v  | | v v | | v v | | v v | | v v | | v v | |v v v| |v v v| |v v v| |   {)| |   {(| |   {)|'],
+                ['| Ä / | |     | |     | |     | |  v  | | v v | |v v v| | v v | |v v v| |v v v| |(V)% | |(V)%%| |(V)%%|'],
+                ['|  .  | |  v  | |  v  | | v v | | v v | | v v | | v v | |v v v| |v v v| |v v v| | V % | | v%%%| | v%%%|'],
                 ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
                 [' _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ '],
-                ['|A ^  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 ♥ | |J  ww| |Q  ww| |K  WW|'],
-                ['| / Ä | |  ♥  | | ♥ ♥ | | ♥ ♥ | | ♥ ♥ | | ♥ ♥ | | ♥ ♥ | |♥ ♥ ♥| |♥ ♥ ♥| |♥ ♥ ♥| | /Ä{)| | /Ä{(| | /Ä{)|'],
-                ['| Ä / | |     | |     | |     | |  ♥  | | ♥ ♥ | |♥ ♥ ♥| | ♥ ♥ | |♥ ♥ ♥| |♥ ♥ ♥| | Ä/% | | Ä/%%| | Ä/%%|'],
-                ['|  .  | |  ♥  | |  ♥  | | ♥ ♥ | | ♥ ♥ | | ♥ ♥ | | ♥ ♥ | |♥ ♥ ♥| |♥ ♥ ♥| |♥ ♥ ♥| |   % | |  %%%| |  %%%|'],
+                ['|A ^  | |2    | |3    | |4    | |5    | |6    | |7    | |8    | |9    | |10 o | |J  ww| |Q  ww| |K  WW|'],
+                ['| / Ä | |  o  | | o o | | o o | | o o | | o o | | o o | |o o o| |o o o| |o o o| | /Ä{)| | /Ä{(| | /Ä{)|'],
+                ['| Ä / | |     | |     | |     | |  o  | | o o | |o o o| | o o | |o o o| |o o o| | Ä/% | | Ä/%%| | Ä/%%|'],
+                ['|  .  | |  o  | |  o  | | o o | | o o | | o o | | o o | |o o o| |o o o| |o o o| |   % | |  %%%| |  %%%|'],
                 ['|____V| |____Z| |____E| |____h| |____S| |____9| |____L| |____8| |____6| |___0I| |__%%[| |_%%%O| |_%%%>|'],
                 [' _____   _____ '],
                 ['|Ä ~ /| |Joker|'],
@@ -287,8 +283,8 @@
             });
         
             socket.on('startGame', () => {
-                document.getElementById('joinMenu').style.display = 'none';
-                document.getElementById('gameMenu').style.display = 'block';   
+                ChangeElementsVisabilityByClass('joinState','none')
+                ChangeElementsVisabilityByClass('gameState','block')
                 //document.getElementById('opHand').innerText = getCard('back');
             });
         
@@ -300,17 +296,22 @@
                 document.getElementById('status').textContent = `A player left. Remaining players: ${players.length}`;
             });
         
-            socket.on('getHand',(inp) => {
-                log(inp[1])
-                let hand = inp[0]
+            socket.on('getHand', (inp) => {
+                //log(`Received hand for player: ${inp[1]}`); // Log playerSocketId
+                //log(`Hand received: ${JSON.stringify(inp[0])}`); // Log the hand itself
+
+                //document.getElementById('log').innerText = 'wuefbruybfwihebfiwe fiyewe\n\n\n\n\nfbyurbyriub';
+                let hand = inp[0];
                 Hand = hand;
                 formatedHand = hand.map(item => `${item[1]} of ${item[0]}`);
-                handStr = getHandStr(formatedHand)
+                handStr = getHandStr(formatedHand);
                 _init_();
             });
 
+
             function _init_(){
-                loadHand('gameHand')
+                loadHand()
+                //log('check 2 electric boogallo')
             }
             
             function getHandStr(hand){
@@ -325,9 +326,17 @@
                 socket.emit('log',data)
             }
 
-            function loadHand(id){
-                var obj = document.getElementById(id)
-                obj.innerText = cardStr
+            function loadHand() {
+                var obj = document.getElementById('myHand');
+                obj.innerHTML = `<pre>${handStr.join('\n\n')}</pre>`;
+                //obj.insertAdjacentHTML('beforeend', '<p> hi </p>');
+            }
+            
+            function ChangeElementsVisabilityByClass(className,type) {
+            var elements = document.getElementsByClassName(className);
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = type;
+            }
             }
         </script>
     </body>

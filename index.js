@@ -79,18 +79,18 @@ io.on('connection', (socket) => {
           cards[roomCode] = genDeck();
         
           // Loop over each player in the room and send them their hand
-          
+          //console.log('Connected players:', Object.keys(io.sockets.sockets));
+
           room.players.forEach(playerSocketId => {
-            //console.log(playerSocketId);  // This should log each player's socket ID
-            // Draw a hand of 3 cards for the player
             let hand = drawTo3(cards[roomCode], []);
-            //console.log(hand);
-            
-            // Send the hand directly to the player
-            //console.log(`data is being sent to ${playerSocketId} : ${hand}`)
-            
-            socket.to(playerSocketId).emit('getHand', [hand,playerSocketId]);
-          });
+            let playerSocket = io.sockets.sockets.get(playerSocketId);
+            if (playerSocket) {
+                playerSocket.emit('getHand', [hand, playerSocketId]);
+            } else {
+                console.error(`Socket ID ${playerSocketId} not found`);
+            }
+        });
+              
         }
         
       } else {
